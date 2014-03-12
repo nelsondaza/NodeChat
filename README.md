@@ -1,27 +1,15 @@
-# [HTML5 Boilerplate](http://html5boilerplate.com)
+# [NodeChat](https://github.com/nelsondaza/NodeChat)
 
-HTML5 Boilerplate is a professional front-end template for building fast,
-robust, and adaptable web apps or sites.
+This is just a simple test trying to create a simple Chat using NodeJS.
 
-This project is the product of many years of iterative development and combined
-community knowledge. It does not impose a specific development philosophy or
-framework, so you're free to architect your code in the way that you want.
-
-* Source: [https://github.com/h5bp/html5-boilerplate](https://github.com/h5bp/html5-boilerplate)
-* Homepage: [http://html5boilerplate.com](http://html5boilerplate.com)
-* Twitter: [@h5bp](http://twitter.com/h5bp)
+* Source: [https://github.com/nelsondaza/NodeChat](https://github.com/nelsondaza/NodeChat)
+* Homepage: [https://github.com/nelsondaza/NodeChat](https://github.com/nelsondaza/NodeChat)
+* Twitter: [@NelsonADP](http://twitter.com/NelsonADP)
 
 
 ## Quick start
 
-Choose one of the following options:
-
-1. Download the latest stable release from
-   [html5boilerplate.com](http://html5boilerplate.com/) or a custom build from
-   [Initializr](http://www.initializr.com).
-2. Clone the git repo — `git clone
-   https://github.com/h5bp/html5-boilerplate.git` - and checkout the tagged
-   release you'd like to use.
+Clone the git repo — `git clone https://github.com/nelsondaza/NodeChat` - and checkout the tagged release you'd like to use.
 
 
 ## Features

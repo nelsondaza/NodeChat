@@ -15,12 +15,13 @@ button,
 input,
 select,
 textarea {
-    color: #222;
+	color: #333;
 }
 
 html {
-    font-size: 12px;
-    line-height: normal;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	line-height: normal;
 }
 
 /*
@@ -301,4 +302,9 @@ textarea {
     h3 {
         page-break-after: avoid;
     }
+}
+
+.ui.form.login {
+	margin: 0 auto;
+	max-width: 300px;
 }

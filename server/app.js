@@ -25,6 +25,7 @@ console.debug = console.debug || console.info;
 console.model = console.model || console.debug;
 console.view = console.view || console.debug;
 console.app = console.app || console.debug;
+console.groupEnd = console.groupEnd || console.debug;
 
 app.console = console;
 app.class = {
@@ -36,9 +37,46 @@ app.class = {
 app.views = require( Path.resolve( __dirname + "/../js/views.js" ) );
 app.models = require( Path.resolve( __dirname + "/../js/models.js" ) );
 
-app.views.initialize( app );
-app.models.initialize( app );
+global._ = _;
+global.Backbone = Backbone;
 
-socket.on('connection', function ( socket ) {
-	console.log( "Conectado..." );
+app.views.initialize( app );
+app.views.load();
+app.models.initialize( app );
+app.models.load();
+
+
+var userSystem = new app.models.User({
+	id: 1,
+	na: 'System',
+	im: '',
+	gm: -5
+});
+
+rooms = {
+	1: new app.models.Room({
+		id: 1,
+		na: 'Default',
+		ow: userSystem,
+		de: 'Default system chat room.',
+		us: [],
+		ti: new Date()
+	}),
+	2: new app.models.Room({
+		id: 2,
+		na: 'Fiends',
+		ow: userSystem,
+		de: 'Default friends system chat room.',
+		us: [],
+		ti: new Date()
+	})
+};
+
+socket.set('log level', 2);
+
+socket.on('connection', function ( client ) {
+	console.log( "Conectado." );
+
+	client.emit("roomslist", rooms);
+
 });

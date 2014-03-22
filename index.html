@@ -58,7 +58,7 @@
 		<![endif]-->
 
 		<div class="ui grid">
-			<div class="row" id="#login">
+			<div class="row" id="login">
 				<div class="column">
 					<br>
 					<div class="ui fluid form segment login">
@@ -69,8 +69,17 @@
 						</div>
 						<div class="field">
 							<label>Chat Room</label>
-							<input placeholder="Room" type="text">
+							<div class="ui selection dropdown">
+								<input name="room" type="hidden">
+								<div class="default text"> - Room - </div>
+								<i class="dropdown icon"></i>
+								<div class="menu">
+									<div class="item" data-value="1">Male</div>
+									<div class="item" data-value="0">Female</div>
+								</div>
+							</div>
 						</div>
+
 						<div class="ui purple submit button">Login</div>
 						<div class="ui active inverted dimmer">
 							<div class="ui medium text loader"><em>Connecting...</em></div>

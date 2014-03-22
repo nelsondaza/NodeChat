@@ -1,6 +1,8 @@
 
 $(function(){
 
+	$.fn.semantic.settings.debug = false;
+
 	$('.popup').popup();
 
 	var socket = null;
@@ -20,6 +22,14 @@ $(function(){
 				console.debug( 'not connected' );
 				// No socket
 			}, 1000 * 30 );
+		});
+		socket.on('roomslist', function( data ) {
+			$('#login .field .menu:first').empty();
+			for( var sIndex in data ) {
+				$('#login .field .menu:first').append('<div class="item" data-value="'+ sIndex + '">' + data[sIndex].na + '</div>');
+			}
+			$('#login .dimmer').removeClass('active');
+			$('.ui.dropdown').dropdown();
 		});
 	}
 	catch ( e ) {

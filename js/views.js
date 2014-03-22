@@ -21,8 +21,6 @@
 			this.loaded = true;
 			console.app(this.app.class.type + ': ' + this.app.class.name + ' views loaded.');
 			console.groupEnd();
-
-			this.app.start( );
 		},
 		sets: [],
 		set: function( func ){
@@ -35,7 +33,7 @@
 		 * @returns Backbone.View
 		 */
 		create: function( name, attributes, options ) {
-			if( app.views[name] )
+			if( this.app.views[name] )
 				throw Error( 'View name "' + name + '" already defined.' );
 
 			if( attributes && attributes.initialize ) {

@@ -5,6 +5,29 @@
 
 $(function(){
 
+	console.debug = console.debug || console.info || console.log;
+	console.model = console.model || console.debug;
+	console.view = console.view || console.debug;
+	console.app = console.app || console.debug;
+	console.groupEnd = console.groupEnd || console.debug;
+
+	var app = {};
+	app.console = console;
+	app.class = {
+		name: 'Client',
+		package: 'app.client',
+		type: 'Custom'
+	};
+
+	app.views = views;
+	app.models = models;
+
+	app.views.initialize( app );
+	app.views.load();
+
+	app.models.initialize( app );
+	app.models.load();
+
 	$.fn.popup.settings.debug = false;
 	$.fn.dropdown.settings.debug = false;
 
@@ -14,86 +37,26 @@ $(function(){
 	var nTimeout = null;
 	var $mainGrid = $('#mainGrid');
 
-	var LoginView = Backbone.View.extend({
-		template: _.template( $('#loginTemplate').html( ) ),
-		events: {
-			"click .submit.button": function( event ){
-				event.preventDefault();
-				var name = this.$('#name').val();
-				var roomId = this.$('#room').dropdown('get').value();
-				var regExp = new RegExp("[^0-9a-z\\_\\-\\.]+", "ig");
 
-				this.showError( );
-				this.showFieldError( 'name', null );
-				this.showFieldError( 'room', null );
-
-				if( !name || name.match(regExp) != null ) {
-					this.showFieldError( 'name', 'Please check your user name. (a-z,0-9,-,_,.)' );
-				}
-				else if( !roomId ) {
-					this.showFieldError( 'room', 'Please select a room.' );
-				}
-				else {
-					this.loadingText('Logging in...');
-					socket.emit('join', name, roomId );
-				}
-			}
-		},
-		render: function( ) {
-			this.$el.html( this.template( ) );
-			return this;
-		},
-		addRoom: function( name, id ) {
-			this.$('.menu:first').append('<div class="item" data-value="'+ id + '">' + name + '</div>');
-			this.$('#room').dropdown();
-			return this;
-		},
-		loadingText: function( text ) {
-			this.active( false );
-			this.$('.dimmer .text em').html( text );
-			return this;
-		},
-		active: function( active ) {
-			if( active === undefined || active )
-				this.$('.dimmer').removeClass('active');
-			else
-				this.$('.dimmer').addClass('active');
-
-		},
-		showFieldError: function( id, msg ) {
-			var field = this.$('#' + id).closest('.field');
-			if( msg ) {
-				field.addClass('error');
-				field.find('.pointing').html(msg).removeClass('hidden');
-				this.$('.form:first').addClass('error');
-			}
-			else {
-				field.find('.pointing').html('').addClass('hidden');
-				field.removeClass('error');
-				this.$('.form:first').removeClass('error');
-			}
-		}
-		,
-		showError: function( msg, title ) {
-			if( msg ) {
-				if( title )
-					this.$('.error.message .header').html( title );
-
-				this.$('.error.message p').html( msg );
-				this.$('.form:first').addClass('error');
-				this.$('.error.message').removeClass('hidden');
-			}
-			else {
-				this.$('.form:first').removeClass('error');
-				this.$('.error.message').addClass('hidden');
-			}
-		}
-	});
-
-	var loginView = new LoginView({
+	var loginView = new app.views.LoginView({
 		className: 'row',
 		id: 'login'
 	});
+	loginView.on("join", function (name, roomId) {
+		console.view(this.class.type + ': ' + this.class.name + ' join: ', arguments);
+		socket.emit('join', name, roomId);
+	});
+
+	var RoomsCollection = Backbone.Collection.extend({
+		model: app.models.Room
+	});
+
+	var menuView = new app.views.MenuView({
+		className: 'four wide column',
+		id: 'menuHolder',
+		collection: new RoomsCollection()
+	});
+
 
 	$mainGrid.html( loginView.render().$el );
 
@@ -119,15 +82,17 @@ $(function(){
 			}
 			loginView.active();
 
+			socket.emit('join', 'Nelson', 1);
 		});
 
-		socket.on('login', function( type, msg ) {
+		socket.on('login', function( type, msg, roomId ) {
 			console.debug( 'Login: ' + type );
 			if( type == 'OK' ) {
-
+				loginView.remove();
+				$mainGrid.html( menuView.render().$el );
 			}
 			else {
-				loginView.showError( msg, 'Login' );
+				loginView.showError( msg, 'LOGIN').active();
 			}
 		});
 
@@ -136,8 +101,9 @@ $(function(){
 		});
 
 		socket.on('updaterooms', function( rooms, roomId ) {
-			console.debug( 'UPDATE: ', rooms, roomId );
-		});
+			console.debug( 'UPDATE ROOMS: ', rooms, roomId );
+			menuView.collection.set( rooms );
+	});
 
 	}
 	catch ( e ) {
@@ -146,6 +112,7 @@ $(function(){
 
 	if( !socket )
 		loginView.loadingText('<span class="ui red header">ERROR: Unable to connect!</span>');
+
 
 });
 

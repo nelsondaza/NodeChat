@@ -15,12 +15,10 @@
 		<script src="js/vendor/modernizr-2.7.1.min.js"></script>
 	</head>
 	<body>
-
 		<div class="ui fixed transparent inverted purple main menu">
 			<div class="title item">
 				<b>ID:</b> Node Chat
 			</div>
-
 			<div class="right menu">
 				<a href="https://github.com/nelsondaza/NodeChat" data-content="View on Github" data-position="bottom left" class="popup icon github item">
 					<i class="icon github"></i>
@@ -57,11 +55,7 @@
 		</div>
 		<![endif]-->
 
-		<div class="ui grid" id="mainGrid">
-			<div class="row" id="login">
-
-			</div>
-		</div>
+		<div class="ui grid" id="mainGrid"></div>
 
 		<!--
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -72,6 +66,9 @@
 		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 		<script src="js/vendor/underscore-min.js"></script>
 		<script src="js/vendor/backbone-min.js"></script>
+		<script src="js/vendor/backbone-relational.js"></script>
+		<script src="js/views.js"></script>
+		<script src="js/models.js"></script>
 		<script src="js/plugins.js"></script>
 		<script src="js/main.js"></script>
 
@@ -120,6 +117,48 @@
 			</div>
 		</div>
 	</script>
+	<script type="text/template" id="menuTemplate">
+		<div class="ui segment">
+			<div class="ui vertical menu">
+				<div class="active purple item">
+					<i class="flag icon"></i> Rooms
+					<div class="menu">
+				<%
+					if( typeof(rooms) !== 'undefined' ) {
+						_.each( rooms, function( room ) {
+				%>
+					<a data-id="<%= room.id %>" class="<%= ( room.id == roomId ? 'active' : '' ) %> purple item" href="#room/<%= room.id %>">
+						<%= room.na %>
+						<div class="ui purple label"><%= room.us.length %></div>
+					</a>
+				<%
+						});
+					}
+				%>
+					</div>
+				</div>
+				<a class="item">
+					Inbox
+					<div class="ui teal label">1</div>
+				</a>
+				<a class="teal item">
+					Spam
+					<div class="ui label">51</div>
+				</a>
+				<a class="item">
+					Updates
+					<div class="ui label">1</div>
+				</a>
+				<div class="item">
+					<div class="ui small icon input">
+						<input type="text" placeholder="Search mail...">
+						<i class="search icon"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
 	<script type="text/template" id="tournamentTemplate">
 		<menu>
 			<ul>

@@ -78,11 +78,15 @@ rooms = {
 socket.set('log level', 2);
 
 socket.on('connection', function ( client ) {
-	console.log( "Conectado." );
+	console.log( "Conectado: " + client.id );
 	client.emit("roomslist", rooms);
 
-	client.on("join", function( name, roomId ) {
+	if( client.id && users[client.id] ) {
+		// Never happens?!
+		console.log( "Already in..." );
+	}
 
+	client.on("join", function( name, roomId ) {
 		console.log( "Joining: " + name + " in " + roomId );
 
 		var user = {};
@@ -96,31 +100,42 @@ socket.on('connection', function ( client ) {
 				im: '',
 				gm: -5,
 				cl: client.id,
-				ro: rooms[roomId]
+				ro: roomId
 			});
 
 			client.name = name;
 		}
 
-		user.ro = roomId;
-		users[client.id] = user;
+		if( !rooms[roomId] ) {
+			console.log( "Login ERROR: " + name + " in " + roomId );
+			client.emit('login', 'ERROR', 'You can\'t connect to this room.' );
+		}
+		else {
+			users[client.id] = user;
 
-		// store the roomId in the socket session for this client
-		client.room = roomId;
-		// send client to room 1
-		client.join( roomId );
+			// store the roomId in the socket session for this client
+			client.room = roomId;
+			user.ro = roomId;
 
-		// echo to client they've connected
-		client.emit('login', 'OK', 'You have connected to ' + rooms[roomId].na );
-		console.log( "Login OK: " + name + " in " + roomId );
+			// send client to room
+			client.join( roomId );
+			rooms[roomId].set('us',user, 'add');
 
-		// echo to the room that a person has connected
-		client.broadcast.to(roomId).emit('update', 'SERVER', user.na + ' has connected to this room');
-		client.emit('updaterooms', rooms, roomId);
+			// echo to client they've connected
+			client.emit('login', 'OK', 'You have connected to ' + rooms[roomId].get('na'), roomId );
+			console.log( "Login OK: " + name + " in " + roomId );
 
-		//socket.sockets.emit("update", user.na + " is online.");
-		//socket.sockets.emit("update-users", users);
-		//clients.push(client); //populate the clients array with the client object
+			// echo to the room that a person has connected
+			client.broadcast.to(roomId).emit('update', 'SERVER', user.get('na') + ' has connected to this room');
+			client.emit('updaterooms', rooms, roomId);
+
+			//socket.sockets.emit("update", user.na + " is online.");
+			//socket.sockets.emit("update-users", users);
+			//clients.push(client); //populate the clients array with the client object
+
+		}
 	});
+
+
 });
 

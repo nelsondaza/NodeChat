@@ -127,10 +127,12 @@
 	};
 
 	models.set(function () {
+
 		this.User = this.create('User', {
 			defaults: {
 				na: '', // name
 				im: '', // image
+				ro: null, // id room
 				gm: -5 // GMT
 			}
 		});
@@ -154,10 +156,6 @@
 					relatedModel: this.User
 				}
 			],
-			/**
-			 * Client Time
-			 * @returns {string}
-			 */
 			time: function () {
 				var date = new Date(( this.ti + (new Date).getTimezoneOffset() * 60 ) * 1000);
 				return [
@@ -166,6 +164,7 @@
 				].join(':');
 			}
 		});
+/*
 		this.Round = this.create('Round', {
 			defaults: {
 				id: 0,
@@ -179,7 +178,7 @@
 					relatedModel: this.Match
 				}
 			],
-			urlRoot: 'https://www.wikifutbol.net/dayscore/cache/services/round/'
+			urlRoot: 'https://.../'
 		});
 		this.Stage = this.create('Stage', {
 			defaults: {
@@ -273,21 +272,7 @@
 				}
 			]
 		});
-
-		/** NOT USED **/
-		this.TournamentOption = this.create('TournamentOption', {
-			defaults: {
-				id: '',
-				name: '',
-				default: 0
-			}
-		});
-		this.Tournament = this.create('Tournament', {
-			defaults: {
-				id: 0,
-				options: []
-			}
-		});
+*/
 	});
 
 if( typeof module != 'undefined' )

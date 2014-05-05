@@ -4,8 +4,8 @@
  */
 	var views = {
 		app: null,
-			loaded: false,
-			initialize: function (app) {
+		loaded: false,
+		initialize: function (app) {
 			this.app = app;
 			console.app(this.app.class.type + ': ' + this.app.class.name + ': Views' );
 		},
@@ -56,10 +56,20 @@
 				},
 				initialize : function( ) {
 					console.view( this.class.type + ': ' + this.class.name  + ' initialize: ', arguments );
-					this.listenTo( this.model, 'change', this.modelChanged );
+
+					if( this.model ) {
+						this.listenTo( this.model, 'change', this.modelChanged );
+					}
+					if( this.collection ) {
+						this.listenTo( this.collection, 'add', this.collectionChanged );
+						this.listenTo( this.collection, 'remove', this.collectionChanged );
+						this.listenTo( this.collection, 'change', this.collectionChanged );
+					}
+
 					this.on( 'all', function( ) {
 						console.view( this.class.type + ': ' + this.class.name  + ' event: ', arguments );
 					});
+
 					this.customInitialize( );
 				},
 				customInitialize : function( ) {
@@ -71,6 +81,17 @@
 						if( !model.hasListenerFor( sIndex ) )
 							this.renderValue( '.' + sIndex, model.changed[sIndex] );
 					}
+
+				},
+				collectionChanged : function( collection, options ) {
+					console.view( this.class.type + ': ' + this.class.name  + ' collectionChanged: ', arguments );
+					console.log( collection );
+					/*
+					for ( var sIndex in collection.changed ) {
+						if( !collection.hasListenerFor( sIndex ) )
+							this.renderValue( '.' + sIndex, collection.changed[sIndex] );
+					}
+					*/
 
 				},
 				render: function() {
@@ -96,6 +117,105 @@
 	};
 
 	views.set( function ( ) {
+
+		this.LoginView = this.create('LoginView', {
+			events: {
+				"click .submit.button": function( event ){
+					console.view( this.class.type + ': ' + this.class.name  + ' submit: ', arguments );
+					event.preventDefault();
+					var name = this.$('#name').val();
+					var roomId = this.$('#room').dropdown('get').value();
+					var regExp = new RegExp("[^0-9a-z\\_\\-\\.]+", "ig");
+
+					this.showError( );
+					this.showFieldError( 'name', null );
+					this.showFieldError( 'room', null );
+
+					if( !name || name.match(regExp) != null ) {
+						this.showFieldError( 'name', 'Please check your user name. (a-z,0-9,-,_,.)' );
+						this.$('#name').focus();
+					}
+					else if( !roomId ) {
+						this.showFieldError( 'room', 'Please select a room.' );
+					}
+					else {
+						this.loadingText('Logging in...');
+						this.trigger('join',name, roomId);
+					}
+				}
+			},
+			render: function( ) {
+				if( !this.template )
+					this.template = _.template( $('#loginTemplate').html( ) );
+
+				this.$el.html( this.template( ) );
+				return this;
+			},
+			addRoom: function( name, id ) {
+				this.$('.menu:first').append('<div class="item" data-value="'+ id + '">' + name + '</div>');
+				this.$('#room').dropdown();
+				return this;
+			},
+			loadingText: function( text ) {
+				this.active( false );
+				this.$('.dimmer .text em').html( text );
+				return this;
+			},
+			active: function( active ) {
+				if( active === undefined || active )
+					this.$('.dimmer').removeClass('active');
+				else
+					this.$('.dimmer').addClass('active');
+				return this;
+			},
+			showFieldError: function( id, msg ) {
+				var field = this.$('#' + id).closest('.field');
+				if( msg ) {
+					field.addClass('error');
+					field.find('.pointing').html(msg).removeClass('hidden');
+					this.$('.form:first').addClass('error');
+				}
+				else {
+					field.find('.pointing').html('').addClass('hidden');
+					field.removeClass('error');
+					this.$('.form:first').removeClass('error');
+				}
+				return this;
+			},
+			showError: function( msg, title ) {
+				if( msg ) {
+					if( title )
+						this.$('.error.message .header').html( title );
+
+					this.$('.error.message p').html( msg );
+					this.$('.form:first').addClass('error');
+					this.$('.error.message').removeClass('hidden');
+				}
+				else {
+					this.$('.form:first').removeClass('error');
+					this.$('.error.message').addClass('hidden');
+				}
+				return this;
+			}
+		});
+
+		this.MenuView = this.create('MenuView',{
+			template: '',
+			events: {
+				"click .submit.button": function( event ){
+					event.preventDefault();
+				}
+			},
+			render: function( ) {
+				if( !this.template )
+					this.template = _.template( $('#menuTemplate').html( ) );
+
+				this.$el.html( this.template( ) );
+				return this;
+			}
+		});
+
+		/*
 
 		this.Team = this.create('Team', {
 			template: _.template(
@@ -150,10 +270,6 @@
 			},
 			initialize: function( ){
 				var self = this;
-				/*
-				 this.listenTo(this.model.get('lo'), 'change', this.changeTeam);
-				 this.listenTo(this.model.get('vi'), 'change', this.changeTeam);
-				 */
 				this.listenTo(this.model, 'change:ti', function( model, value, options ) {
 					self.renderValue( '.ti', self.time( ) );
 				});
@@ -468,10 +584,9 @@
 				'<% } %>'
 			),
 			events: {
-				/*"click": "navegate",
-				"change select": "navegateOption"*/
 			}
 		});
+*/
 	});
 
 if( typeof module != 'undefined' )

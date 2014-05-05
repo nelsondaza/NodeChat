@@ -1,49 +1,4 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>NodeChat</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/normalize-3.0.0.css">
-        <link rel="stylesheet" href="css/semantic.min.css">
-	    <link rel="stylesheet" href="css/main.css">
-        <script src="js/vendor/modernizr-2.7.1.min.js"></script>
-    </head>
-    <body>
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-        <div id="mainHolder"></div>
-        <!--
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
-        -->
-        <script src="js/vendor/jquery-1.11.0.min.js"></script>
-        <script src="js/plugins.js"></script>
-        <script src="js/vendor/semantic.min.js"></script>
-        <script src="js/vendor/underscore-min.js"></script>
-        <script src="js/vendor/backbone-min.js"></script>
-        <script src="js/main.js"></script>
-
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <!--
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');
-        </script>
-        -->
-    </body>
-=======
 <!--[if lt IE 7]>		<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>			<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>			<html class="no-js lt-ie9"> <![endif]-->
@@ -102,35 +57,9 @@
 		</div>
 		<![endif]-->
 
-		<div class="ui grid">
+		<div class="ui grid" id="mainGrid">
 			<div class="row" id="login">
-				<div class="column">
-					<br>
-					<div class="ui fluid form segment login">
-						<h3 class="ui header">Let's Chat</h3>
-						<div class="field">
-							<label>Username</label>
-							<input placeholder="Username" type="text">
-						</div>
-						<div class="field">
-							<label>Chat Room</label>
-							<div class="ui selection dropdown">
-								<input name="room" type="hidden">
-								<div class="default text"> - Room - </div>
-								<i class="dropdown icon"></i>
-								<div class="menu">
-									<div class="item" data-value="1">Male</div>
-									<div class="item" data-value="0">Female</div>
-								</div>
-							</div>
-						</div>
 
-						<div class="ui purple submit button">Login</div>
-						<div class="ui active inverted dimmer">
-							<div class="ui medium text loader"><em>Connecting...</em></div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 
@@ -138,9 +67,9 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
 		-->
-		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 		<script src="js/vendor/jquery-1.11.0.min.js"></script>
 		<script src="js/vendor/semantic.min.js"></script>
+		<script src="http://localhost:8080/socket.io/socket.io.js"></script>
 		<script src="js/vendor/underscore-min.js"></script>
 		<script src="js/vendor/backbone-min.js"></script>
 		<script src="js/plugins.js"></script>
@@ -157,6 +86,71 @@
 			ga('create','UA-XXXXX-X');ga('send','pageview');
 		</script>
 		-->
+
+		<!-- VIEWS SECTION -->
+	<script type="text/template" id="loginTemplate">
+		<div class="column">
+			<br>
+			<div class="ui fluid form segment login">
+				<h3 class="ui header">Let's Chat</h3>
+				<div class="field">
+					<label>Username</label>
+					<input placeholder="Username" type="text" name="name" id="name">
+					<div class="ui red pointing above ui label hidden"></div>
+				</div>
+				<div class="field">
+					<label>Chat Room</label>
+					<div class="ui selection dropdown" id="room">
+						<div class="default text"> - Room - </div>
+						<i class="dropdown icon"></i>
+						<div class="menu"></div>
+					</div>
+					<br>
+					<div class="ui red pointing above ui label hidden"></div>
+				</div>
+
+				<div class="ui purple submit button">Login</div>
+				<div class="ui error message">
+					<div class="header">Action Forbidden</div>
+					<p>You can only sign up with a given user name.</p>
+				</div>
+				<div class="ui active inverted dimmer">
+					<div class="ui medium text loader"><em>Connecting...</em></div>
+				</div>
+			</div>
+		</div>
+	</script>
+	<script type="text/template" id="tournamentTemplate">
+		<menu>
+			<ul>
+				<%
+					_.each( ops, function( op ) {
+						if (des == 1 || (op.id != 'descenso' && op.id != 'goleadores' && op.id != 'reclasificacion'
+                            && op.id != 'posiciones') || (scr == 1 && op.id != 'descenso') ||
+                            (pos_rec == 1 && op.id != 'descenso' && op.id != 'goleadores')) {
+				%>
+				<li data-id="<%= op.id %>"><a href="#<%= id %>/<%= op.id %>"><%= op.na %></a></li>
+				<%
+						}
+					});
+				%>
+			</ul>
+			<select data-id="<%= id %>">
+				<%
+					_.each( ops, function( op ) {
+                        if (des == 1 || (op.id != 'descenso' && op.id != 'goleadores' && op.id != 'reclasificacion'
+                            && op.id != 'posiciones') || (scr == 1 && op.id != 'descenso') ||
+                            (pos_rec == 1 && op.id != 'descenso' && op.id != 'goleadores')) {
+				%>
+				<option data-id="<%= op.id %>" value="<%= op.id %>"><%= op.na.toLowerCase( ) %></option>
+				<%
+						}
+					});
+				%>
+			</select>
+		</menu>
+		<div class="subsections"></div>
+	</script>
+
 	</body>
->>>>>>> 79bd9d290dbf2eb359a1467a6a4a6ee2aced23c4
 </html>

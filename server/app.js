@@ -4,48 +4,6 @@
 
 var express = require('express');
 var app = express();
-<<<<<<< HEAD
-var io = require('socket.io').listen(app);
-
-app.listen(8080);
-
-// routing
-// usernames which are currently connected to the chat
-var usernames = {};
-
-io.sockets.on('connection', function (socket) {
-
-	// when the client emits 'sendchat', this listens and executes
-	socket.on('sendchat', function (data) {
-		// we tell the client to execute 'updatechat' with 2 parameters
-		io.sockets.emit('updatechat', socket.username, data);
-	});
-
-	// when the client emits 'adduser', this listens and executes
-	socket.on('adduser', function(username){
-		// we store the username in the socket session for this client
-		socket.username = username;
-		// add the client's username to the global list
-		usernames[username] = username;
-		// echo to client they've connected
-		socket.emit('updatechat', 'SERVER', 'you have connected');
-		// echo globally (all clients) that a person has connected
-		socket.broadcast.emit('updatechat', 'SERVER', username + ' has connected');
-		// update the list of users in chat, client-side
-		io.sockets.emit('updateusers', usernames);
-	});
-
-	// when the user disconnects.. perform this
-	socket.on('disconnect', function(){
-		// remove the username from global usernames list
-		delete usernames[socket.username];
-		// update list of users in chat, client-side
-		io.sockets.emit('updateusers', usernames);
-		// echo globally that this client has left
-		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-	});
-});
-=======
 var HTTP = require('http');
 var IO = require('socket.io');
 var Path = require('path');
@@ -63,8 +21,9 @@ var socket = IO.listen( server );
 var users = {};
 var rooms = {};
 
-console.debug = console.debug || console.info;
+console.debug = console.debug || console.info || console.log;
 console.model = console.model || console.debug;
+console.model = function(){};
 console.view = console.view || console.debug;
 console.app = console.app || console.debug;
 console.groupEnd = console.groupEnd || console.debug;
@@ -92,7 +51,9 @@ var userSystem = new app.models.User({
 	id: 1,
 	na: 'System',
 	im: '',
-	gm: -5
+	gm: -5,
+	cl: null,
+	ro: null
 });
 
 rooms = {
@@ -118,8 +79,48 @@ socket.set('log level', 2);
 
 socket.on('connection', function ( client ) {
 	console.log( "Conectado." );
-
 	client.emit("roomslist", rooms);
 
+	client.on("join", function( name, roomId ) {
+
+		console.log( "Joining: " + name + " in " + roomId );
+
+		var user = {};
+		if( users[client.id] ) {
+			user = users[client.id];
+		}
+		else {
+			user = new app.models.User({
+				id: client.id,
+				na: name,
+				im: '',
+				gm: -5,
+				cl: client.id,
+				ro: rooms[roomId]
+			});
+
+			client.name = name;
+		}
+
+		user.ro = roomId;
+		users[client.id] = user;
+
+		// store the roomId in the socket session for this client
+		client.room = roomId;
+		// send client to room 1
+		client.join( roomId );
+
+		// echo to client they've connected
+		client.emit('login', 'OK', 'You have connected to ' + rooms[roomId].na );
+		console.log( "Login OK: " + name + " in " + roomId );
+
+		// echo to the room that a person has connected
+		client.broadcast.to(roomId).emit('update', 'SERVER', user.na + ' has connected to this room');
+		client.emit('updaterooms', rooms, roomId);
+
+		//socket.sockets.emit("update", user.na + " is online.");
+		//socket.sockets.emit("update-users", users);
+		//clients.push(client); //populate the clients array with the client object
+	});
 });
->>>>>>> 79bd9d290dbf2eb359a1467a6a4a6ee2aced23c4
+

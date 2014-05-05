@@ -15,22 +15,13 @@ button,
 input,
 select,
 textarea {
-<<<<<<< HEAD
-    color: #333;
-=======
 	color: #333;
->>>>>>> 79bd9d290dbf2eb359a1467a6a4a6ee2aced23c4
 }
 
 html {
 	font-family: Helvetica, Arial, sans-serif;
-<<<<<<< HEAD
-    font-size: 12px;
-    line-height: normal;
-=======
 	font-size: 12px;
 	line-height: normal;
->>>>>>> 79bd9d290dbf2eb359a1467a6a4a6ee2aced23c4
 }
 
 /*

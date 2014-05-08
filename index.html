@@ -15,27 +15,25 @@
 		<script src="js/vendor/modernizr-2.7.1.min.js"></script>
 	</head>
 	<body>
-		<div class="ui fixed transparent inverted purple main menu">
+		<div class="ui fixed transparent inverted purple main menu" id="mainMenu">
 			<div class="title item">
 				<b>ID:</b> Node Chat
 			</div>
 			<div class="right menu">
+				<div class="ui simple dropdown item hidden">
+					<i class="icon user"></i> <span id="menuUserName">Nelson Daza</span>
+					<div class="theme menu">
+						<a href="?" class="item">
+							<i class="icon sign out"></i>
+							Logout
+						</a>
+					</div>
+				</div>
 				<a href="https://github.com/nelsondaza/NodeChat" data-content="View on Github" data-position="bottom left" class="popup icon github item">
 					<i class="icon github"></i>
 				</a>
-				<!--
-				<div class="ui simple dropdown item">
-				  <i class="icon tint"></i> Theme
-				  <div class="theme menu">
-					<div class="active item" data-theme="flat">Flat</div>
-					<div class="item" data-theme="shaded">Shaded</div>
-					<div class="item" data-theme="classic">Classic</div>
-				  </div>
-				</div>
-				!-->
 			</div>
 		</div>
-
 		<!--[if lt IE 7]>
 		<div class="ui grid">
 			<div class="row">
@@ -56,6 +54,27 @@
 		<![endif]-->
 
 		<div class="ui grid" id="mainGrid"></div>
+		<div class="ui grid">
+			<div class="column">
+				<div class="ui primary purple segment">
+					<div class="ui ribbon teal label">
+						<i class="chat outline big icon"></i> <b>Chat X</b>
+					</div>
+
+					<div class="ui piled segment">
+						<a class="like ui corner label">
+							<i class="new icon"></i>
+						</a>
+					</div>
+
+					<div class="ui piled purple segment">
+						<a class="like ui corner purple label">
+							<i class="comment icon"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!--
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -117,46 +136,14 @@
 			</div>
 		</div>
 	</script>
+	<script type="text/template" id="menuOptionTemplate">
+		<i class="icon flag"></i>
+		<%= na %>
+		<div class="ui label"><%= us.length %></div>
+	</script>
 	<script type="text/template" id="menuTemplate">
-		<div class="ui segment">
-			<div class="ui vertical menu">
-				<div class="active purple item">
-					<i class="flag icon"></i> Rooms
-					<div class="menu">
-				<%
-					if( typeof(rooms) !== 'undefined' ) {
-						_.each( rooms, function( room ) {
-				%>
-					<a data-id="<%= room.id %>" class="<%= ( room.id == roomId ? 'active' : '' ) %> purple item" href="#room/<%= room.id %>">
-						<%= room.na %>
-						<div class="ui purple label"><%= room.us.length %></div>
-					</a>
-				<%
-						});
-					}
-				%>
-					</div>
-				</div>
-				<a class="item">
-					Inbox
-					<div class="ui teal label">1</div>
-				</a>
-				<a class="teal item">
-					Spam
-					<div class="ui label">51</div>
-				</a>
-				<a class="item">
-					Updates
-					<div class="ui label">1</div>
-				</a>
-				<div class="item">
-					<div class="ui small icon input">
-						<input type="text" placeholder="Search mail...">
-						<i class="search icon"></i>
-					</div>
-				</div>
-			</div>
-		</div>
+		<i class="icon chat"></i> Rooms
+		<div class="theme menu" id="menuRooms"></div>
 	</script>
 
 	<script type="text/template" id="tournamentTemplate">

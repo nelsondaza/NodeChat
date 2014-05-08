@@ -36,6 +36,7 @@ $(function(){
 	var socket = null;
 	var nTimeout = null;
 	var $mainGrid = $('#mainGrid');
+	var $mainMenu = $('#mainMenu');
 
 
 	var loginView = new app.views.LoginView({
@@ -52,7 +53,7 @@ $(function(){
 	});
 
 	var menuView = new app.views.MenuView({
-		className: 'four wide column',
+		className: 'ui simple dropdown item',
 		id: 'menuHolder',
 		collection: new RoomsCollection()
 	});
@@ -85,11 +86,16 @@ $(function(){
 			socket.emit('join', 'Nelson', 1);
 		});
 
-		socket.on('login', function( type, msg, roomId ) {
-			console.debug( 'Login: ' + type );
+		socket.on('login', function( type, msg, roomId, user ) {
+			console.debug( 'Login: ', arguments );
 			if( type == 'OK' ) {
+				app.user = user;
+
 				loginView.remove();
-				$mainGrid.html( menuView.render().$el );
+
+				$('#menuUserName').text( user.na ).closest('.dropdown').removeClass('hidden');
+
+				$mainMenu.prepend( menuView.render().$el );
 			}
 			else {
 				loginView.showError( msg, 'LOGIN').active();
@@ -101,8 +107,15 @@ $(function(){
 		});
 
 		socket.on('updaterooms', function( rooms, roomId ) {
-			console.debug( 'UPDATE ROOMS: ', rooms, roomId );
-			menuView.collection.set( rooms );
+			var roomsArr = [];
+
+			for( var sIndex in rooms ) {
+				roomsArr.push( rooms[sIndex] );
+			}
+
+			console.debug( 'UPDATE ROOMS: ', roomsArr, roomId, app.user );
+			menuView.collection.set( roomsArr );
+			menuView.setActive( app.user.ro );
 	});
 
 	}
@@ -112,7 +125,6 @@ $(function(){
 
 	if( !socket )
 		loginView.loadingText('<span class="ui red header">ERROR: Unable to connect!</span>');
-
 
 });
 

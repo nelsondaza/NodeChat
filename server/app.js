@@ -115,19 +115,22 @@ socket.on('connection', function ( client ) {
 
 			// store the roomId in the socket session for this client
 			client.room = roomId;
-			user.ro = roomId;
 
 			// send client to room
 			client.join( roomId );
-			rooms[roomId].set('us',user, 'add');
+			console.log( rooms[roomId] );
+			rooms[roomId].get('us').add(user);
+
+			console.log( rooms[roomId] );
 
 			// echo to client they've connected
-			client.emit('login', 'OK', 'You have connected to ' + rooms[roomId].get('na'), roomId );
+			client.emit('login', 'OK', 'You have connected to ' + rooms[roomId].get('na'), roomId, user );
 			console.log( "Login OK: " + name + " in " + roomId );
 
 			// echo to the room that a person has connected
 			client.broadcast.to(roomId).emit('update', 'SERVER', user.get('na') + ' has connected to this room');
 			client.emit('updaterooms', rooms, roomId);
+			client.broadcast.emit('updaterooms', rooms);
 
 			//socket.sockets.emit("update", user.na + " is online.");
 			//socket.sockets.emit("update-users", users);
@@ -136,6 +139,14 @@ socket.on('connection', function ( client ) {
 		}
 	});
 
+	client.on('disconnect', function(){
+		console.log( "Leaving: " + client.id + " in " + client.room );
 
+		rooms[client.room].get('us').remove(users[client.id]);
+		delete users[client.id];
+
+		client.broadcast.emit('updaterooms', rooms);
+	});
 });
+
 

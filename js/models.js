@@ -132,7 +132,7 @@
 			defaults: {
 				na: '', // name
 				im: '', // image
-				ro: null, // id room
+				ro: null, // room
 				gm: -5 // GMT
 			}
 		});
@@ -156,6 +156,10 @@
 					relatedModel: this.User
 				}
 			],
+			reverseRelation: {
+				key: 'ro',
+				includeInJSON: 'id'
+			},
 			time: function () {
 				var date = new Date(( this.ti + (new Date).getTimezoneOffset() * 60 ) * 1000);
 				return [

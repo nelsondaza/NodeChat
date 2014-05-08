@@ -47,6 +47,14 @@
 					package: 'app.views',
 					type: 'View'
 				},
+				_templateViewSelector: null,
+				_rendered: false,
+				_childViews: [],
+				_childViewConstructor: null,
+				_childViewSelectorHolder: '',
+				_childViewAttributes: {},
+				$childEl: null,
+
 				className: name.toLowerCase( ),
 				constructor : function( ) {
 					if( arguments[0] && !isNaN( arguments[0] ) )
@@ -54,15 +62,28 @@
 					console.view( this.class.type + ': ' + this.class.name + ' constructor: ', arguments );
 					return Backbone[this.class.type].apply( this, arguments );
 				},
-				initialize : function( ) {
+				initialize : function( localOptions ) {
 					console.view( this.class.type + ': ' + this.class.name  + ' initialize: ', arguments );
 
 					if( this.model ) {
+						console.view( this.class.type + ': ' + this.class.name  + ' initialize using Model' );
 						this.listenTo( this.model, 'change', this.modelChanged );
 					}
 					if( this.collection ) {
-						this.listenTo( this.collection, 'add', this.collectionChanged );
-						this.listenTo( this.collection, 'remove', this.collectionChanged );
+						console.view( this.class.type + ': ' + this.class.name  + ' initialize using Collection' );
+
+						this._childViewConstructor = localOptions.childViewConstructor || options.childViewConstructor;
+						this._childViewAttributes = localOptions.childViewAttributes || options.childViewAttributes;
+						this._childViewSelectorHolder = localOptions.childViewSelectorHolder || options.childViewSelectorHolder;
+						this._childViews = [];
+
+						if (!this._childViewConstructor)
+							throw "no child view constructor provided";
+
+						this.collection.each(this.collectionAdd);
+
+						this.listenTo( this.collection, 'add', this.collectionAdd );
+						this.listenTo( this.collection, 'remove', this.collectionRemove );
 						this.listenTo( this.collection, 'change', this.collectionChanged );
 					}
 
@@ -70,9 +91,9 @@
 						console.view( this.class.type + ': ' + this.class.name  + ' event: ', arguments );
 					});
 
-					this.customInitialize( );
+					this.customInitialize( localOptions );
 				},
-				customInitialize : function( ) {
+				customInitialize : function( localOptions ) {
 					console.view( this.class.type + ': ' + this.class.name  + ' default customInitialize: ', arguments );
 				},
 				modelChanged : function( model, options ) {
@@ -83,24 +104,59 @@
 					}
 
 				},
+				collectionAdd : function( model ) {
+					console.view( this.class.type + ': ' + this.class.name  + ' collectionAdd: ', arguments );
+
+					var config = _.extend(this._childViewAttributes, {model: model});
+					var childView = new this._childViewConstructor(config);
+
+					this._childViews.push(childView);
+
+					if (this._rendered)
+						this.$childEl.append(childView.render().el);
+				},
+				collectionRemove : function( model ) {
+					console.view( this.class.type + ': ' + this.class.name  + ' collectionRemove: ', arguments );
+					var viewToRemove = _(this._childViews).select(function(cv) { return cv.model === model; })[0];
+					this._childViews = _(this._childViews).without(viewToRemove);
+
+					if (this._rendered)
+						viewToRemove.$el.remove();
+				},
 				collectionChanged : function( collection, options ) {
 					console.view( this.class.type + ': ' + this.class.name  + ' collectionChanged: ', arguments );
-					console.log( collection );
-					/*
-					for ( var sIndex in collection.changed ) {
-						if( !collection.hasListenerFor( sIndex ) )
-							this.renderValue( '.' + sIndex, collection.changed[sIndex] );
-					}
-					*/
-
 				},
 				render: function() {
 					console.view( this.class.type + ': ' + this.class.name  + ' default render: ', arguments );
-					if( this.template && this.model ) {
-						if( this.model.id )
-							this.$el.attr('data-id', this.model.id);
-						this.$el.html( this.template( this.model.attributes ) );
+
+					if( !this.template && this._templateViewSelector )
+						this.template = _.template( $(this._templateViewSelector).html( ) );
+
+					this._rendered = true;
+
+					if( this.model && this.model.id )
+						this.$el.attr('data-id', this.model.id);
+					this.$el.attr('data-type', this.class.name);
+
+					if( this.template )
+						this.$el.html( this.template( ( this.model ? this.model.attributes : {} ) ) );
+
+					if ( this.collection ) {
+						if( !this.$childEl ) {
+							if (this._childViewSelectorHolder)
+								this.$childEl = this.$(this._childViewSelectorHolder);
+							else
+								this.$childEl = this.$el;
+						}
+
+						this.$childEl.empty();
+
+						var self = this;
+						_(this._childViews).each(function(childView) {
+							self.$childEl.append(childView.render().el);
+						});
 					}
+
 					return this;
 				},
 				renderValue : function( element, value ){
@@ -108,6 +164,12 @@
 					this.$(element).stop( ).fadeOut( "slow", function( ) {
 						$(this).html( value ).fadeIn( "slow" );
 					});
+				},
+				getDataId: function( ) {
+					return ( this.model && this.model.id ? this.model.id : null );
+				},
+				getDataType: function( ) {
+					return this.class.name;
 				}
 
 			}, attributes || {});
@@ -119,6 +181,7 @@
 	views.set( function ( ) {
 
 		this.LoginView = this.create('LoginView', {
+			_templateViewSelector: '#loginTemplate',
 			events: {
 				"click .submit.button": function( event ){
 					console.view( this.class.type + ': ' + this.class.name  + ' submit: ', arguments );
@@ -143,13 +206,6 @@
 						this.trigger('join',name, roomId);
 					}
 				}
-			},
-			render: function( ) {
-				if( !this.template )
-					this.template = _.template( $('#loginTemplate').html( ) );
-
-				this.$el.html( this.template( ) );
-				return this;
 			},
 			addRoom: function( name, id ) {
 				this.$('.menu:first').append('<div class="item" data-value="'+ id + '">' + name + '</div>');
@@ -199,20 +255,44 @@
 			}
 		});
 
-		this.MenuView = this.create('MenuView',{
-			template: '',
+		this.MenuOptionView = this.create('MenuOptionView',{
+			tagName: 'a',
+			_templateViewSelector: '#menuOptionTemplate',
+			className: "item",
 			events: {
-				"click .submit.button": function( event ){
+				"click a": function( event ){
 					event.preventDefault();
 				}
 			},
-			render: function( ) {
-				if( !this.template )
-					this.template = _.template( $('#menuTemplate').html( ) );
-
-				this.$el.html( this.template( ) );
-				return this;
+			initialize: function( options ){
+				var self = this;
+				this.listenTo( this.model, 'relational:change:us', function( ) {
+					self.renderValue( '.label', this.model.get('us').length );
+				} );
+			},
+			setActive: function ( active ) {
+				this.$('.icon,.label').toggleClass('teal', active == true);
 			}
+		});
+
+		this.MenuView = this.create('MenuView',{
+			_templateViewSelector: '#menuTemplate',
+			events: {
+				"click .submit.button": function( event ){
+					event.preventDefault();
+					$('.ui.sidebar').sidebar();
+					$('.demo.sidebar').sidebar('toggle');
+				}
+			},
+			setActive: function( roomId ) {
+				_(this._childViews).each(function(childView) {
+					childView.setActive( childView.getDataId() == roomId );
+				});
+			}
+		},{
+			childViewConstructor: this.MenuOptionView,
+			childViewSelectorHolder: '#menuRooms',
+			childViewAttributes: {}
 		});
 
 		/*

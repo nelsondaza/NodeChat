@@ -37,7 +37,7 @@ $(function(){
 	var nTimeout = null;
 	var $mainGrid = $('#mainGrid');
 	var $mainMenu = $('#mainMenu');
-
+	var chatView = null;
 
 	var loginView = new app.views.LoginView({
 		className: 'row',
@@ -57,7 +57,6 @@ $(function(){
 		id: 'menuHolder',
 		collection: new RoomsCollection()
 	});
-
 
 	$mainGrid.html( loginView.render().$el );
 
@@ -86,7 +85,7 @@ $(function(){
 			socket.emit('join', 'Nelson', 1);
 		});
 
-		socket.on('login', function( type, msg, roomId, user ) {
+		socket.on('login', function( type, msg, room, user ) {
 			console.debug( 'Login: ', arguments );
 			if( type == 'OK' ) {
 				app.user = user;
@@ -96,6 +95,15 @@ $(function(){
 				$('#menuUserName').text( user.na ).closest('.dropdown').removeClass('hidden');
 
 				$mainMenu.prepend( menuView.render().$el );
+
+				chatView = new app.views.ChatView({
+					className: 'column',
+					model: new app.models.Room(room)
+					//collection: new MessageCollection()
+				});
+
+				$mainGrid.empty().append( chatView.render().$el );
+
 			}
 			else {
 				loginView.showError( msg, 'LOGIN').active();

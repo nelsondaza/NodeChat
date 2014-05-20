@@ -54,28 +54,6 @@
 		<![endif]-->
 
 		<div class="ui grid" id="mainGrid"></div>
-		<div class="ui grid">
-			<div class="column">
-				<div class="ui primary purple segment">
-					<div class="ui ribbon teal label">
-						<i class="chat outline big icon"></i> <b>Chat X</b>
-					</div>
-
-					<div class="ui piled segment">
-						<a class="like ui corner label">
-							<i class="new icon"></i>
-						</a>
-					</div>
-
-					<div class="ui piled purple segment">
-						<a class="like ui corner purple label">
-							<i class="comment icon"></i>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<!--
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
@@ -144,6 +122,56 @@
 	<script type="text/template" id="menuTemplate">
 		<i class="icon chat"></i> Rooms
 		<div class="theme menu" id="menuRooms"></div>
+	</script>
+	<script type="text/template" id="chatTemplate">
+		<div class="ui primary purple segment">
+			<div class="ui ribbon teal label">
+				<i class="chat outline big icon"></i> <b><%= na %></b>
+			</div>
+			<div class="ui piled segment">
+				<div class="ui piled purple segment">
+					<div class="comment">
+						<a class="avatar">
+							<img src="/images/demo/avatar.jpg">
+						</a>
+						<div class="content">
+							<a class="author">Dog Doggington</a>
+							<div class="metadata">
+								<span class="date">2 days ago</span>
+							</div>
+							<div class="text">
+								I think this is a great idea and i am voting on it
+							</div>
+							<div class="actions">
+								<a class="reply">Reply</a>
+								<a class="delete">Delete</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui piled purple segment">
+					<div class="comment">
+						<a class="avatar">
+							<img src="/images/demo/avatar.jpg">
+						</a>
+						<div class="content">
+							<a class="author">Dog Doggington</a>
+							<div class="metadata">
+								<span class="date">2 days ago</span>
+							</div>
+							<div class="text">
+								I think this is a great idea and i am voting on it
+							</div>
+							<div class="actions">
+								<a class="reply">Reply</a>
+								<a class="delete">Delete</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
 	</script>
 
 	<script type="text/template" id="tournamentTemplate">

@@ -295,6 +295,38 @@
 			childViewAttributes: {}
 		});
 
+		this.MessageView = this.create('MessageView',{
+			_templateViewSelector: '#messageTemplate',
+			className: "item",
+			events: {
+				"click a": function( event ){
+					event.preventDefault();
+				}
+			},
+			initialize: function( options ){
+				var self = this;
+				this.listenTo( this.model, 'relational:change:us', function( ) {
+					self.renderValue( '.label', this.model.get('us').length );
+				} );
+			},
+			setActive: function ( active ) {
+				this.$('.icon,.label').toggleClass('teal', active == true);
+			}
+		});
+
+		this.ChatView = this.create('ChatView',{
+			_templateViewSelector: '#chatTemplate',
+			events: {
+				"click .submit.button": function( event ){
+					event.preventDefault();
+				}
+			}
+		},{
+			childViewConstructor: this.MessageView,
+			childViewSelectorHolder: '#chatMessages',
+			childViewAttributes: {}
+		});
+
 		/*
 
 		this.Team = this.create('Team', {

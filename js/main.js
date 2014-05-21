@@ -52,6 +52,10 @@ $(function(){
 		model: app.models.Room
 	});
 
+	var MessageCollection = Backbone.Collection.extend({
+		model: app.models.Message
+	});
+
 	var menuView = new app.views.MenuView({
 		className: 'ui simple dropdown item',
 		id: 'menuHolder',
@@ -64,11 +68,11 @@ $(function(){
 		socket = io.connect( '', {port:8080} );
 		socket.on('connect', function( ) {
 			loginView.loadingText('Looking for Rooms...');
-			console.debug( 'connected' );
+			console.app( 'connected' );
 			clearTimeout( nTimeout );
 		});
 		socket.on('disconnect', function( ) {
-			console.debug( 'disconnected' );
+			console.app( 'disconnected' );
 			clearTimeout( nTimeout );
 			nTimeout = setInterval( function( ) {
 				console.debug( 'not connected' );
@@ -86,7 +90,8 @@ $(function(){
 		});
 
 		socket.on('login', function( type, msg, room, user ) {
-			console.debug( 'Login: ', arguments );
+			console.groupCollapsed('Login');
+			console.app( 'Login: ', arguments );
 			if( type == 'OK' ) {
 				app.user = user;
 
@@ -98,32 +103,53 @@ $(function(){
 
 				chatView = new app.views.ChatView({
 					className: 'column',
-					model: new app.models.Room(room)
-					//collection: new MessageCollection()
+					model: new app.models.Room(room),
+					collection: new MessageCollection()
 				});
 
-				$mainGrid.empty().append( chatView.render().$el );
+				var msgModel = new app.models.Message({
+					id: 'update' + chatView.collection.length,
+					ty: 'WELLCOME',
+					msg: 'Welcome ' + user.na
+				});
+				chatView.collection.add( msgModel );
 
+				$mainGrid.empty().append( chatView.render().$el );
 			}
 			else {
 				loginView.showError( msg, 'LOGIN').active();
 			}
+			console.groupEnd('Login');
 		});
 
 		socket.on('update', function( type, msg ) {
-			console.debug( 'UPDATE: ' + type + " -> " + msg );
+			console.group('Update');
+			if( chatView ) {
+				console.app( 'UPDATE VIEW: ' + type + " -> " + msg );
+				var msgModel = new app.models.Message({
+					id: 'update' + chatView.collection.length,
+					ty: type,
+					msg: msg
+				});
+				chatView.collection.add( msgModel );
+			}
+			else
+				console.app( 'UPDATE VIEW: ' + type + " -> " + msg );
+			console.groupEnd('Update');
 		});
 
 		socket.on('updaterooms', function( rooms, roomId ) {
+			console.groupCollapsed('UpdateRooms');
 			var roomsArr = [];
 
 			for( var sIndex in rooms ) {
 				roomsArr.push( rooms[sIndex] );
 			}
 
-			console.debug( 'UPDATE ROOMS: ', roomsArr, roomId, app.user );
+			//console.debug( 'UPDATE ROOMS: ', roomsArr, roomId, app.user );
 			menuView.collection.set( roomsArr );
 			menuView.setActive( app.user.ro );
+			console.groupEnd('UpdateRooms');
 	});
 
 	}
@@ -136,4 +162,11 @@ $(function(){
 
 });
 
+/*
+$("#button").click(function() {
+	$('html, body').animate({
+		scrollTop: $("#elementtoScrollToID").offset().top
+	}, 2000);
+});
 
+*/

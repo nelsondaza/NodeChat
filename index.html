@@ -123,54 +123,107 @@
 		<i class="icon chat"></i> Rooms
 		<div class="theme menu" id="menuRooms"></div>
 	</script>
+	<script type="text/template" id="messageTemplate">
+		<%
+			if ( ty == 'user' ) {
+		%>
+		<div class="ui ribbon purple label">A corner label must be positioned inside a container with position: relative to display properly</div>
+		<!-- comment local/remote -->
+		<div class="avatar">
+			<img class="circular ui image" src="http://t1.gstatic.com/images?q=tbn:ANd9GcRzYZZH-XH6f03DIMzZMeQkTgkixdfXSjrFxC1HxV_4DRxUGBfRoWGgZA">
+			<span>Nombre</span>
+			<small>6 min ago</small>
+		</div>
+		<div class="content ui pointing left label">
+			I think this is a great idea and i am voting on it
+		</div>
+		<div class="clearfix"></div>
+		<%
+			}
+			else {
+		%>
+		<div class="ui ribbon label"><%= msg %></div>
+		<br>
+		<br>
+		<%
+			}
+		%>
+	</script>
 	<script type="text/template" id="chatTemplate">
 		<div class="ui primary purple segment">
 			<div class="ui ribbon teal label">
 				<i class="chat outline big icon"></i> <b><%= na %></b>
 			</div>
-			<div class="ui piled segment">
-				<div class="ui piled purple segment">
-					<div class="comment">
-						<a class="avatar">
-							<img src="/images/demo/avatar.jpg">
-						</a>
-						<div class="content">
-							<a class="author">Dog Doggington</a>
-							<div class="metadata">
-								<span class="date">2 days ago</span>
-							</div>
-							<div class="text">
-								I think this is a great idea and i am voting on it
-							</div>
-							<div class="actions">
-								<a class="reply">Reply</a>
-								<a class="delete">Delete</a>
-							</div>
+			<div class="ui segment scrolling">
+				<div class="ui piled segment comment-list">
+					<div class="comment local">
+						<div class="avatar">
+							<img class="circular ui image" src="http://t1.gstatic.com/images?q=tbn:ANd9GcRzYZZH-XH6f03DIMzZMeQkTgkixdfXSjrFxC1HxV_4DRxUGBfRoWGgZA">
+							<span>Nombre</span>
+							<small>6 min ago</small>
 						</div>
+						<div class="content ui pointing left label">
+							I think this is a great idea and i am voting on it
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="comment remote">
+						<div class="avatar">
+							<img class="circular ui image" src="http://t1.gstatic.com/images?q=tbn:ANd9GcRzYZZH-XH6f03DIMzZMeQkTgkixdfXSjrFxC1HxV_4DRxUGBfRoWGgZA">
+							<span>Nombre</span>
+							<small>6 min ago</small>
+						</div>
+						<div class="content ui pointing right label">
+							I think
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="ui ribbon purple label">A corner label must be positioned inside a container with position: relative to display properly</div>
+					<div class="comment local">
+						<div class="avatar">
+							<img class="circular ui image" src="http://t1.gstatic.com/images?q=tbn:ANd9GcRzYZZH-XH6f03DIMzZMeQkTgkixdfXSjrFxC1HxV_4DRxUGBfRoWGgZA">
+							<span>Nombre</span>
+							<small>6 min ago</small>
+						</div>
+						<div class="content ui pointing left label">
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+							I think this is a great idea and i am voting on it
+							<br>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<div class="comment remote">
+						<div class="avatar">
+							<img class="circular ui image" src="http://t1.gstatic.com/images?q=tbn:ANd9GcRzYZZH-XH6f03DIMzZMeQkTgkixdfXSjrFxC1HxV_4DRxUGBfRoWGgZA">
+							<span>Nombre</span>
+							<small>6 min ago</small>
+						</div>
+						<div class="content ui pointing right label">
+							I think this is a great idea and i am voting on it
+						</div>
+						<div class="clearfix"></div>
 					</div>
 				</div>
-				<div class="ui piled purple segment">
-					<div class="comment">
-						<a class="avatar">
-							<img src="/images/demo/avatar.jpg">
-						</a>
-						<div class="content">
-							<a class="author">Dog Doggington</a>
-							<div class="metadata">
-								<span class="date">2 days ago</span>
-							</div>
-							<div class="text">
-								I think this is a great idea and i am voting on it
-							</div>
-							<div class="actions">
-								<a class="reply">Reply</a>
-								<a class="delete">Delete</a>
-							</div>
-						</div>
-					</div>
-				</div>
-
 			</div>
+			<form class="ui reply form reply-form">
+				<div class="field">
+					<textarea></textarea>
+				</div>
+				<div class="ui fluid teal labeled submit icon button">
+					<i class="icon edit"></i> Add Reply
+				</div>
+			</form>
 		</div>
 	</script>
 

@@ -136,6 +136,16 @@
 				gm: -5 // GMT
 			}
 		});
+		this.Message = this.create('Message', {
+			defaults: {
+				ty: null, // info/server/error/user message
+				msg: '', // name
+				us: null, // user
+				lo: false, // local/remote
+				ti: null, // time
+				gm: -5 // GMT
+			}
+		});
 		this.Room = this.create('Room', {
 			defaults: {
 				na: '',     // name

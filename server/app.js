@@ -74,13 +74,16 @@ function loadfaces ( ){
 	};
 	http.request(options, callback).end();
 }
-loadfaces();
+
 function getRandomFace() {
 
+	if( faces.length < 2 )
+		loadfaces();
+
+	var index = Math.floor(Math.random()*faces.length);
 	var face = faces[Math.floor(Math.random()*faces.length)];
-	loadfaces();
 
-
+	faces.splice(index, 1);
 
 	return face;
 }
@@ -106,7 +109,7 @@ rooms = {
 	}),
 	2: new app.models.Room({
 		id: 2,
-		na: 'Fiends',
+		na: 'Friends',
 		ow: userSystem,
 		de: 'Default friends system chat room.',
 		us: [],
@@ -162,7 +165,7 @@ socket.on('connection', function ( client ) {
 			console.log( "Login OK: " + name + " in " + roomId );
 
 			// echo to the room that a person has connected
-			client.broadcast.to(roomId).emit('update', 'SERVER', user.get('na') + ' has connected to this room');
+			client.broadcast.to(roomId).emit('update', 'SERVER', user.get('na') + ' - connected to this room');
 			client.emit('updaterooms', rooms, roomId);
 			client.broadcast.emit('updaterooms', rooms);
 
@@ -176,7 +179,7 @@ socket.on('connection', function ( client ) {
 	client.on('disconnect', function(){
 		console.log( "Leaving: " + client.id + " in " + client.room );
 
-		client.broadcast.to(client.room).emit('update', 'SERVER', users[client.id].get('na') + ' gone offline');
+		client.broadcast.to(client.room).emit('update', 'SERVER', users[client.id].get('na') + ' - gone offline');
 
 		rooms[client.room].get('us').remove(users[client.id]);
 		delete users[client.id];

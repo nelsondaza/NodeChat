@@ -126,13 +126,20 @@
 				collectionChanged : function( collection, options ) {
 					console.view( this.class.type + ': ' + this.class.name  + ' collectionChanged: ', arguments );
 				},
+				beforeRender: function( ) {
+					console.view( this.class.type + ': ' + this.class.name  + ' before render: ', arguments );
+				},
+				afterRender: function( ) {
+					console.view( this.class.type + ': ' + this.class.name  + ' after render: ', arguments );
+				},
 				render: function() {
+
+					this.beforeRender();
+
 					console.view( this.class.type + ': ' + this.class.name  + ' default render: ', arguments );
 
 					if( !this.template && this._templateViewSelector )
 						this.template = _.template( $(this._templateViewSelector).html( ) );
-
-					this._rendered = true;
 
 					if( this.model && this.model.id )
 						this.$el.attr('data-id', this.model.id);
@@ -153,9 +160,14 @@
 
 						var self = this;
 						_(this._childViews).each(function(childView) {
+							console.error(childView.render().el);
 							self.$childEl.append(childView.render().el);
 						});
 					}
+
+					this._rendered = true;
+
+					this.afterRender();
 
 					return this;
 				},
@@ -303,14 +315,11 @@
 					event.preventDefault();
 				}
 			},
-			initialize: function( options ){
-				var self = this;
-				this.listenTo( this.model, 'relational:change:us', function( ) {
-					self.renderValue( '.label', this.model.get('us').length );
-				} );
-			},
-			setActive: function ( active ) {
-				this.$('.icon,.label').toggleClass('teal', active == true);
+			beforeRender: function() {
+				if( this.model && this.model.get('ty') != 'user' ) {
+					this.className = 'ui ribbon purple label';
+					this.$el.removeClass().addClass(this.className);
+				}
 			}
 		});
 
@@ -323,7 +332,7 @@
 			}
 		},{
 			childViewConstructor: this.MessageView,
-			childViewSelectorHolder: '#chatMessages',
+			childViewSelectorHolder: '.comment-list',
 			childViewAttributes: {}
 		});
 

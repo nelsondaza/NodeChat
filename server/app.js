@@ -8,6 +8,9 @@ var HTTP = require('http');
 var IO = require('socket.io');
 var Path = require('path');
 
+app.use(express.cookieParser());
+app.use(express.session({secret: '73FCHATNODEJS896'}));
+
 var _ = require('underscore')._; // npm install underscore
 var Backbone = require('backbone'); // npm install backbone
 var BackboneRelational = require('backbone-relational'); // npm install backbone
@@ -118,6 +121,7 @@ rooms = {
 };
 
 socket.on('connection', function ( client ) {
+
 	console.log( "Conectado: " + client.id );
 	client.emit("roomslist", rooms);
 

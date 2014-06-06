@@ -391,7 +391,7 @@ textarea {
 /* Large desktop */
 @media (min-width: 1200px) {
 	.ui.segment.scrolling {
-		height: 800px;
+		height: 760px;
 	}
 
 }
